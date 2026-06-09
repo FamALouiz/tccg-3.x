@@ -99,7 +99,7 @@ class Gett:
         return self.getNumRegsA(mr) + self.getNumRegsB() + self.getNumRegsC(mr,nr)
 
     def getMultiplyKernelBcast(self, Cregs, indent, mc1, nc1, mr, nr):
-        numRegsA = self.getNumRegsA(mr) 
+        numRegsA = int(self.getNumRegsA(mr))
         arch = self.arch
         if( self.getNumRegs(mr, nr) > arch.numRegisters):
             print(WARNING + "WARNING: too many registers used: %d/%d."%(self.getNumRegs(mr, nr), arch.numRegisters) + ENDC)
@@ -143,7 +143,7 @@ class Gett:
 
 
     def getMicroKernel(self, mc, mc1, nc, nc1, mr, nr, ChatMicro, mIndL1, nIndL1):
-       numRegsA = self.getNumRegsA(mr) 
+       numRegsA = int(self.getNumRegsA(mr))
        level = 1
        indent = self.indent
        code = "template<int update, int kc>\n"
