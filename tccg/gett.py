@@ -942,7 +942,7 @@ class Gett:
 
         # we prefer to parallelize the third loop around the micro kernel (private copies in L2)
         ret = "%sint parallelStrategyId = 0;\n"%(self.indent)
-        ret += "%sint numParallelStrategies[%d][5] = {\n"%(self.indent,min(8,parallelismStragegies))
+        ret += "%sint numParallelStrategies[%d][5] = {\n"%(self.indent,min(8,100)) # TODO: This will always compare to 8
         for i in range(min(8,len(parallelismStragegies))):
             tmp = ""
             for a in parallelismStragegies[i]:
