@@ -110,7 +110,7 @@ def getCompilerVersion(compiler):
     if( compiler == "ibm" ):
         comp = "bgxlc"
     if( compiler == "nvcc"):
-	comp = "nvcc"
+        comp = "nvcc"
 
     version = "--version"
     if( compiler == "ibm" ):
