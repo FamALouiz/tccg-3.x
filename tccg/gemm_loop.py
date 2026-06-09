@@ -1,7 +1,7 @@
 # Copyright (C) 2016 Paul Springer (springer@aices.rwth-aachen.de) - All Rights Reserved
 import copy
 import itertools
-from tccg_util import *
+from .tccg_util import *
 
 class GemmLoop:
     def __init__ (self, A, B, C, alpha, beta, numThreads, floatType, arch, batchedGEMM, maxCandidates):
@@ -247,7 +247,7 @@ class GemmLoop:
         if( len(intersect(requiredGEMMindices, mIndices)) != 1 or
             len(intersect(requiredGEMMindices, nIndices)) >= 2 or
             len(intersect(requiredGEMMindices, kIndices)) >= 2 ):
-            print "LoG not possible"
+            print("LoG not possible")
             return -1
 
         mIdx = C.indices[0]
@@ -314,7 +314,7 @@ class GemmLoop:
         fgett.close()
 
     def selectBestCandidate(self):
-        print "Total amount of LoG implementations: %d"%len(self.candidates)
+        print("Total amount of LoG implementations: %d"%len(self.candidates))
         maxGemmSize = 0
         for candidate in self.candidates:
             m_size = self.candidates[candidate][1]
@@ -344,6 +344,6 @@ class GemmLoop:
             gemmSize = m_size * n_size * k_size
             if( gemmSize == maxGemmSize and batchSize == maxBatchSize ):
                 goodCandidatesStr += candidate + ", "
-        print "Best LoG candidates: ", goodCandidatesStr[0:-2]
+        print("Best LoG candidates: ", goodCandidatesStr[0:-2])
         return goodCandidatesStr 
 

@@ -1,8 +1,8 @@
 # Copyright (C) 2016 Paul Springer (springer@aices.rwth-aachen.de) - All Rights Reserved
 import copy
-from tccg_util import *
-from arch import *
-from tensor import *
+from .tccg_util import *
+from .arch import *
+from .tensor import *
 
 class GEMM:
     def __init__ (self,opA, opB, mInd, nInd, kInd, A, lda, B, ldb, beta_str,

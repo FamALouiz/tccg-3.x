@@ -13,7 +13,7 @@ def getLastPrimaryKey(cursor):
     try:
         cursor.execute(command)
     except sqlite3.Error as e:
-        print FAIL + "[TCC] ERROR (sql):", e.args[0], ENDC
+        print(FAIL + "[TCC] ERROR (sql):", e.args[0], ENDC)
         traceback.print_exc()   
         exit(-1)
     result = cursor.fetchall() 
@@ -24,7 +24,7 @@ def getFastestLoop(cursor, measurementID):
     try:
         cursor.execute(command)
     except sqlite3.Error as e:
-        print FAIL + "ERROR (sql):", e.args[0], ENDC
+        print(FAIL + "ERROR (sql):", e.args[0], ENDC)
         exit(-1)
 
     maxFlops = -1
@@ -42,7 +42,7 @@ def getFastestTTGT(cursor, measurementID):
     try:
         cursor.execute(command)
     except sqlite3.Error as e:
-        print FAIL + "ERROR (sql):", e.args[0], ENDC
+        print(FAIL + "ERROR (sql):", e.args[0], ENDC)
         exit(-1)
 
     maxFlops = -1
@@ -62,7 +62,7 @@ def getFastestGETT(cursor, measurementID):
     try:
         cursor.execute(command)
     except sqlite3.Error as e:
-        print FAIL + "ERROR (sql):", e.args[0], ENDC
+        print(FAIL + "ERROR (sql):", e.args[0], ENDC)
         exit(-1)
 
     maxFlops = -1
@@ -147,7 +147,7 @@ def insertIntoGETT(cursor, variant,
     try:
         cursor.execute(command)
     except sqlite3.Error as e:
-        print FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC
+        print(FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC)
         traceback.print_exc()   
         exit(-1)
     primaryKey = getLastPrimaryKey(cursor)
@@ -163,7 +163,7 @@ def insertIntoGEMM(cursor, measurement_id, flops):
     try:
         cursor.execute(command)
     except sqlite3.Error as e:
-        print FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC
+        print(FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC)
         traceback.print_exc()   
         exit(-1)
     primaryKey = getLastPrimaryKey(cursor)
@@ -180,7 +180,7 @@ def insertIntoTTGT(cursor, measurement_id, flops):
     try:
         cursor.execute(command)
     except sqlite3.Error as e:
-        print FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC
+        print(FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC)
         traceback.print_exc()   
         exit(-1)
     primaryKey = getLastPrimaryKey(cursor)
@@ -196,7 +196,7 @@ def insertIntoLoop(cursor, measurement_id, flops):
     try:
         cursor.execute(command)
     except sqlite3.Error as e:
-        print FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC
+        print(FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC)
         traceback.print_exc()   
         exit(-1)
     primaryKey = getLastPrimaryKey(cursor)
@@ -229,7 +229,7 @@ def getMeasurementId(cursor,
     try:
         cursor.execute(command)
     except sqlite3.Error as e:
-        print FAIL + "ERROR (sql):", e.args[0], ENDC
+        print(FAIL + "ERROR (sql):", e.args[0], ENDC)
         exit(-1)
 
     result = cursor.fetchall() 
@@ -299,7 +299,7 @@ def insertIntoMeasurements(cursor,
     try:
         cursor.execute(command)
     except sqlite3.Error as e:
-        print FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC
+        print(FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC)
         traceback.print_exc()   
         exit(-1)
     primaryKey = getLastPrimaryKey(cursor)
@@ -318,7 +318,7 @@ def createTables(cursor):
     try:
         cursor.execute(command)
     except sqlite3.Error as e:
-        print FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC
+        print(FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC)
         traceback.print_exc()   
         exit(-1)
 
@@ -333,7 +333,7 @@ def createTables(cursor):
     try:
         cursor.execute(command)
     except sqlite3.Error as e:
-        print FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC
+        print(FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC)
         traceback.print_exc()   
         exit(-1)
 
@@ -348,7 +348,7 @@ def createTables(cursor):
     try:
         cursor.execute(command)
     except sqlite3.Error as e:
-        print FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC
+        print(FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC)
         traceback.print_exc()   
         exit(-1)
 
@@ -374,7 +374,7 @@ def createTables(cursor):
     try:
         cursor.execute(command)
     except sqlite3.Error as e:
-        print FAIL + "[TCC] ERROR (sql):", e.args[0], command,ENDC
+        print(FAIL + "[TCC] ERROR (sql):", e.args[0], command,ENDC)
         traceback.print_exc()   
         exit(-1)
 
@@ -401,7 +401,7 @@ def createTables(cursor):
     try:
         cursor.execute(command)
     except sqlite3.Error as e:
-        print FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC
+        print(FAIL + "[TCC] ERROR (sql):", e.args[0], command, ENDC)
         traceback.print_exc()   
         exit(-1)
 

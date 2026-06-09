@@ -26,7 +26,7 @@ output = (
     + ENDC
     + ": execute 'export TCCG_ROOT=%s' #" % (os.path.dirname(os.path.realpath(__file__)))
 )
-print("#" * (len(output) - 2 * len(FAIL) + 1))
+print(("#" * (len(output) - 2 * len(FAIL) + 1)))
 print(output)
-print("#" * (len(output) - 2 * len(FAIL) + 1))
+print(("#" * (len(output) - 2 * len(FAIL) + 1)))
 print("")

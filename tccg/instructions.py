@@ -1,5 +1,5 @@
 # Copyright (C) 2016 Paul Springer (springer@aices.rwth-aachen.de) - All Rights Reserved
-from register import Register
+from .register import Register
 
 class Instruction:
    def __init__(self, code, latency):

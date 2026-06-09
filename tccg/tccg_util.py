@@ -1,5 +1,5 @@
 # Copyright (C) 2016 Paul Springer (springer@aices.rwth-aachen.de) - All Rights Reserved
-from Index import *
+from .Index import *
 import itertools
 import sys
 import traceback
@@ -45,7 +45,7 @@ def getBatchedGemmFunctionName( floatType, arch, useStridedBatchedGemm ):
         else:
             return "zgemm_batch"
     else:
-        print "ERROR: floattype unknown."
+        print("ERROR: floattype unknown.")
         exit(-1)
 
 
@@ -71,7 +71,7 @@ def getGemmFunctionName( floatType, arch ):
         else:
             return "zgemm_"
     else:
-        print "ERROR: floattype unknown."
+        print("ERROR: floattype unknown.")
         exit(-1)
 
 def getCPUarchitecture():
@@ -119,7 +119,7 @@ def getCompilerVersion(compiler):
         proc = subprocess.Popen([comp, version],stdout=subprocess.PIPE)
         proc.wait()
     except:
-        print FAIL + "ERROR: some error has occured. Does the selected compiler (%s) exist?"%comp + ENDC
+        print(FAIL + "ERROR: some error has occured. Does the selected compiler (%s) exist?"%comp + ENDC)
         exit(-1)
 
     output = proc.communicate()[0].split("\n")
@@ -127,7 +127,7 @@ def getCompilerVersion(compiler):
     return output
 
 def tccError(string):
-    print FAIL + "[TCC] ERROR: %s."%string + ENDC
+    print(FAIL + "[TCC] ERROR: %s."%string + ENDC)
 
 def hasItem( L, item ):
     for l in L:
@@ -143,7 +143,7 @@ def getFloatSize(floatType):
     elif( floatType == "double complex" ):
         return 16
     else:
-        print "ERROR: float type unknown."
+        print("ERROR: float type unknown.")
         exit(-1)
 
 def allocateMemory(codeblocks, floatType):
@@ -306,7 +306,7 @@ def listToString(l):
 
 def splitIndex(idx, size):
     if( idx.size % size != 0):
-        print "Index %s: nothing to split."%(str(idx))
+        print("Index %s: nothing to split."%(str(idx)))
         exit(-1)
     
     idx0 = index(idx.label + "_0", size)             # paper: S_{\widetilde{m}_0}
@@ -399,7 +399,7 @@ def __getSolutions(primes, counts, indicesWithPrimeFactor, solutions):
     for s in subsets:
         countOcc = {}
         for idx in s:
-            if( countOcc.has_key(idx.label) ):
+            if( idx.label in countOcc ):
                 countOcc[idx.label] += 1
             else:
                 countOcc[idx.label] = 1
@@ -468,7 +468,7 @@ def splitIndexSet(indices, size, tensorA, keepStride1A, tensorB, keepStride1B, r
     count = {} 
     indicesWithPrimfactor = {}
     for p in primsMC:
-        if( count.has_key(p) ):
+        if( p in count ):
             count[p] += 1
         else:
             count[p] = 1
@@ -480,7 +480,7 @@ def splitIndexSet(indices, size, tensorA, keepStride1A, tensorB, keepStride1B, r
         prims = getPrimeFactors(idx.size)
 
         for p in prims:
-            if( indicesWithPrimfactor.has_key(p) ): #only add primefactor that contribute to the splitting of size 
+            if( p in indicesWithPrimfactor ): #only add primefactor that contribute to the splitting of size 
                 indicesWithPrimfactor[p].append(idx)
 
     # 1) get all candidates
@@ -520,7 +520,7 @@ def splitIndexSet(indices, size, tensorA, keepStride1A, tensorB, keepStride1B, r
         for idx in candidate:
             pos = findPosition(idx, indices)
             if( pos == -1 ):
-                print "[TCC] Error: Index ",idx,"not found"
+                print("[TCC] Error: Index ",idx,"not found")
                 traceback.print_stack()   
             toSplit = indices[pos]
             if( idx.size != toSplit.size ): #only split if necessary
@@ -533,8 +533,8 @@ def splitIndexSet(indices, size, tensorA, keepStride1A, tensorB, keepStride1B, r
                      tensorAA.replaceIndex(toSplit, replaceWith)
                      tensorBB.replaceIndex(toSplit, replaceWith)
                 else:
-                    print "[TCC] Error in splitIndexSet(): index not found in tensor."
-                    print tensorA, tensorB, listToString(indices), size, idx
+                    print("[TCC] Error in splitIndexSet(): index not found in tensor.")
+                    print(tensorA, tensorB, listToString(indices), size, idx)
                     traceback.print_stack()   
                     exit(-1)
                 ind0.append(idx0)
@@ -567,7 +567,7 @@ def splitIndexSet_OLD(indices, mc, tensorA, tensorB):
         if( i < len(indices) and size < mc and size * indices[i].size > mc ):
             idx = indices[i]
             if( mc % size != 0):
-                print "Index %s cannot be split by %d."%(str(idx), size)
+                print("Index %s cannot be split by %d."%(str(idx), size))
                 exit(-1)
             newSizeIndex = mc / size #resize and split the index such that size(ind0) == mc!
             (idx0, idx1) = splitIndex(idx, newSizeIndex)
@@ -578,7 +578,7 @@ def splitIndexSet_OLD(indices, mc, tensorA, tensorB):
                  tensorA.replaceIndex(idx, replaceWith)
                  tensorB.replaceIndex(idx, replaceWith)
             else:
-                print "Error: splitIndexSet(): index not found in tensor."
+                print("Error: splitIndexSet(): index not found in tensor.")
                 exit(-1)
             ind0.append(idx0)
             ind1.append(idx1)

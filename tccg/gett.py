@@ -1,10 +1,10 @@
 # Copyright (C) 2016 Paul Springer (springer@aices.rwth-aachen.de) - All Rights Reserved
 import copy
 import re
-from register import Register
-from arch import *
-from tensor import *
-from tccg_util import *
+from .register import Register
+from .arch import *
+from .tensor import *
+from .tccg_util import *
 import os
 import traceback
 
@@ -41,11 +41,11 @@ class Gett:
 
         self.loopIndices = getLoopIndices(A, B, C)
         if( len(self.loopIndices) > 0 ):
-            print FAIL + "ERROR: loop indices are not yet supported by GETT" + ENDC
+            print(FAIL + "ERROR: loop indices are not yet supported by GETT" + ENDC)
             exit(-1)
         for idx in self.loopIndices:
             if( idx == A.indices[0] or idx == B.indices[0] or idx == C.indices[0] ):
-                print FAIL + "ERROR: loop-indices (i.e., indices that appear in all tensors) are not allowed to be the stride-1 index of any input." + ENDC
+                print(FAIL + "ERROR: loop-indices (i.e., indices that appear in all tensors) are not allowed to be the stride-1 index of any input." + ENDC)
                 exit(-1)
 
         # encode the loop-order and the position of the packing routines. (Leftmost == outermost loop)
@@ -102,9 +102,9 @@ class Gett:
         numRegsA = self.getNumRegsA(mr) 
         arch = self.arch
         if( self.getNumRegs(mr, nr) > arch.numRegisters):
-            print WARNING + "WARNING: too many registers used: %d/%d."%(self.getNumRegs(mr, nr), arch.numRegisters) + ENDC
+            print(WARNING + "WARNING: too many registers used: %d/%d."%(self.getNumRegs(mr, nr), arch.numRegisters) + ENDC)
         if(mr % self.arch.registerSize != 0):
-            print "ERROR: mr needs to be a multiple of %d"%self.arch.registerSize
+            print("ERROR: mr needs to be a multiple of %d"%self.arch.registerSize)
             exit(-1)
 
         code = []
@@ -151,7 +151,7 @@ class Gett:
        code += "{\n"
 
        if(mr % self.arch.registerSize != 0):
-           print "ERROR: mr must be divisible by %d"%self.arch.registerSize
+           print("ERROR: mr must be divisible by %d"%self.arch.registerSize)
            exit(-1)
 
        #initialize C to zero
@@ -246,7 +246,7 @@ class Gett:
            offsetC += preC + "im_ * MR * NR" 
            return ("MR", "im_", offsetA, offsetB, offsetC)
        else:
-           print "[TCCG] ERROR: cannot decode upperbound:", upperBound
+           print("[TCCG] ERROR: cannot decode upperbound:", upperBound)
            exit(-1)
 
     #at this point A is already packed in column-major format: mc x kc 
@@ -316,8 +316,8 @@ class Gett:
             i+=1
 
         if( size % BLOCKING_SIZE != 0):
-            print size, BLOCKING_SIZE
-            print "TODO: MC does not divide sizeM"
+            print(size, BLOCKING_SIZE)
+            print("TODO: MC does not divide sizeM")
             exit(-1)
 
         return indPack
@@ -399,7 +399,7 @@ class Gett:
       elif( ABC == 'C'):
          return ""
       else:
-         print FAIL + "ERROR: packing cannot be decoded.", ABC +ENDC
+         print(FAIL + "ERROR: packing cannot be decoded.", ABC +ENDC)
          exit(-1)
 
     def _declareIndices(self, mnk, level, indent, mInd1, nInd1, kInd1):
@@ -411,7 +411,7 @@ class Gett:
       elif( mnk == 'k'):
          return self._declareKindices(level, indent, kInd1)
       else:
-         print FAIL + "ERROR: loop cannot be decoded." +ENDC
+         print(FAIL + "ERROR: loop cannot be decoded." +ENDC)
          exit(-1)
 
     def _declareKindices(self, level, indent, kInd1):
@@ -485,7 +485,7 @@ class Gett:
       elif( mnk == 'k'):
          code = "%sfor( int ik_ = myStart[1]; ik_ < myEnd[1]; ++ik_ )\n%s{\n"%(level*indent,level*indent)
       else:
-         print FAIL + "ERROR: loop cannot be decoded." +ENDC
+         print(FAIL + "ERROR: loop cannot be decoded." +ENDC)
          exit(-1)
 
       return code
@@ -584,7 +584,7 @@ class Gett:
         elif( self.floatType.find("omplex") != -1 ):
             return 8
         else:
-            print "ERROR float type unknown"
+            print("ERROR float type unknown")
             exit(-1)
 
     def estimateGFLOPS(self, mc, nc, kc, mc1, nc1, mr, nr, permA, Ahat, permB, Bhat, Chat, variant):
@@ -998,7 +998,7 @@ class Gett:
                    sortedEstimatedGflops.append(estimatedGflops[key])
 
                sortedEstimatedGflops.sort(reverse=True)
-               print "Total amount of GETT implementations: %d"%(len(sortedEstimatedGflops))
+               print("Total amount of GETT implementations: %d"%(len(sortedEstimatedGflops)))
 
            for variant_id in range(len(self.gemmVariants)):
                variant = self.gemmVariants[variant_id]
@@ -1123,7 +1123,7 @@ class Gett:
                                                     or indicesStr != fastestKey[8]):
                                                        continue
                                                estFlops = self.estimateGFLOPS(mc, nc, kc, mc1, nc1, mr, nr, permA, Ahat, permB, Bhat, Chat, variant)
-                                               if( neglectPermutations and estimatedGflops.has_key(key) ): 
+                                               if( neglectPermutations and key in estimatedGflops ): 
                                                    estimatedGflops[key] = max(estimatedGflops[key], estFlops) #only consider the best-rated permutation per variant
                                                else:
                                                    estimatedGflops[key] = estFlops
@@ -1140,7 +1140,7 @@ class Gett:
                                                #if( estimate_or_generate ):
                                                
 
-                                               if( estFlops < estimatedGflops[key] or done.has_key(key) ): # only consider the best-rated permutation per variant, this helps to sample the 
+                                               if( estFlops < estimatedGflops[key] or key in done ): # only consider the best-rated permutation per variant, this helps to sample the 
                                                   continue                              # search space in a coarser fashion and avoids to sample very similar candidates redundantly.
 
                                                maxImpl = min(self.maxImplementations-1, len(sortedEstimatedGflops)-1)
@@ -1156,30 +1156,30 @@ class Gett:
                                                if( Ahat.countContiguousStrideOneElements() < self.arch.cacheLineSize ):
                                                    # We only test the non-packed tensor because the size of the _entire_ 
                                                    # packed tensor is chosen such that it remains in cache anyway (i.e., spatial locality is fully exploited)
-                                                   print WARNING + "WARNING: packing of A will be inefficient. Spatial locality has not been fully exploited: %d / %d"%(Ahat.countContiguousStrideOneElements(), self.arch.cacheLineSize)
-                                                   print "    "+ str(Ahat) + " -> " + str(Atilde) + ENDC
+                                                   print(WARNING + "WARNING: packing of A will be inefficient. Spatial locality has not been fully exploited: %d / %d"%(Ahat.countContiguousStrideOneElements(), self.arch.cacheLineSize))
+                                                   print("    "+ str(Ahat) + " -> " + str(Atilde) + ENDC)
                                                (permA, sizeA, lda, ldaOut) = generateTransposeHPTT(Ahat, Atilde)
                                                if( Bhat.countContiguousStrideOneElements() < self.arch.cacheLineSize ): 
                                                    # We only test the non-packed tensor because the size of the _entire_ 
                                                    # packed tensor is chosen such that it remains in cache anyway (i.e., spatial locality is fully exploited)
-                                                   print WARNING + "WARNING: packing of B will be inefficient. Spatial locality has not been fully exploited: %d / %d"%(Bhat.countContiguousStrideOneElements(), self.arch.cacheLineSize)
-                                                   print "    "+ str(Bhat) + " -> " + str(Btilde) + ENDC
+                                                   print(WARNING + "WARNING: packing of B will be inefficient. Spatial locality has not been fully exploited: %d / %d"%(Bhat.countContiguousStrideOneElements(), self.arch.cacheLineSize))
+                                                   print("    "+ str(Bhat) + " -> " + str(Btilde) + ENDC)
                                                (permB, sizeB, ldb, ldbOut) = generateTransposeHPTT(Bhat, Btilde)
 
                                                if( ChatMicro.countContiguousStrideOneElements() < self.arch.cacheLineSize ): 
                                                    # We only test the non-packed tensor because the size of the _entire_ 
                                                    # packed tensor is chosen such that it remains in cache anyway (i.e., spatial locality is fully exploited)
-                                                   print WARNING + "WARNING: packing of C will be inefficient. Spatial locality has not been fully exploited: %d / %d"%(ChatMicro.countContiguousStrideOneElements(), self.arch.cacheLineSize)
-                                                   print "    " + str(microTileC) + " -> " + str(ChatMicro) + ENDC
+                                                   print(WARNING + "WARNING: packing of C will be inefficient. Spatial locality has not been fully exploited: %d / %d"%(ChatMicro.countContiguousStrideOneElements(), self.arch.cacheLineSize))
+                                                   print("    " + str(microTileC) + " -> " + str(ChatMicro) + ENDC)
 
                                                if( self.verbose ):
-                                                   print "GFLOPS: ", estimatedGflops[key]
-                                                   print "   ",variant
-                                                   print "   ",self.getName((variant_id, mc,nc,kc,mc1, nc1, mr, nr, indicesStr))
-                                                   print "   ",mc, nc, kc
-                                                   print "   ",Atilde,"<<<", Ahat,"<<<", tensorA3
-                                                   print "   ",Btilde,"<<<", Bhat,"<<<", tensorB3
-                                                   print "   ",Chat,"<<<", tensorC4
+                                                   print("GFLOPS: ", estimatedGflops[key])
+                                                   print("   ",variant)
+                                                   print("   ",self.getName((variant_id, mc,nc,kc,mc1, nc1, mr, nr, indicesStr)))
+                                                   print("   ",mc, nc, kc)
+                                                   print("   ",Atilde,"<<<", Ahat,"<<<", tensorA3)
+                                                   print("   ",Btilde,"<<<", Bhat,"<<<", tensorB3)
+                                                   print("   ",Chat,"<<<", tensorC4)
                                                code = "// "+str(Atilde)+ " <<< "+str(Ahat)+" <<< "+ str(tensorA3) + "\n"
                                                code += "// "+str(Btilde)+ " <<< "+str(Bhat)+" <<< "+ str(tensorB3) + "\n"
                                                code += "// "+str(Chat)+ " <<< "+str(tensorC4) + "\n\n"
@@ -1225,7 +1225,7 @@ class Gett:
                                                        macroVariant = token[7:].split("_")
                                                        break
                                                if( macroVariant == "" ):
-                                                   print "[TCCG] ERROR: macro variant could not be decoded."
+                                                   print("[TCCG] ERROR: macro variant could not be decoded.")
                                                    exit(0)
                                                code += self.getMacroKernel(mc, mc1,
                                                      nc, nc1, macroVariant,
@@ -1407,13 +1407,13 @@ class Gett:
                                                fgett.write(code)
                                                fgett.close()
 
-                                               if( self.implementations.has_key(key) ):
+                                               if( key in self.implementations ):
                                                    self.implementations[key].append((gettName,estFlops))
                                                else:
                                                    self.implementations[key] = [(gettName,estFlops)]
 
                                                counter += 1
-                                               print "%d gett versions generated so far."%counter
+                                               print("%d gett versions generated so far."%counter)
                                                self.numImpl += 1
 
        fgett = open("gett.hpp","w")

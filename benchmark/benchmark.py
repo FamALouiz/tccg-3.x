@@ -305,7 +305,7 @@ def generate(testcases,benchmarkName,arch,numThreads,maxImplementations,floatTyp
               indices.append(c)
        indices = set(indices)
        for idx in indices:
-          if( not sizesTmp.has_key(idx) ):
+          if( idx not in sizesTmp ):
               if( idx == tensors[0][0] or idx == tensors[1][0] or idx == tensors[2][0] ):
                   # each stride-1 index should be a multiple of _dimensionMultiple 
                   sizesTmp[idx] = int((averageIndexSize + _dimensionMultipleStride1 - 1) / _dimensionMultipleStride1) * _dimensionMultipleStride1
@@ -419,12 +419,12 @@ def main():
    for tc in _sortedTCs:
        for generatedTC in stdout:
            if( generatedTC.startswith(tc) ):
-               print generatedTC
+               print(generatedTC)
                break;
 
-   print ""
-   print "[SUCCESS] The file 'tccg_benchmark.sh' has been created."
-   print "You can run the benchmark via '. tccg_benchmark.sh'"
+   print("")
+   print("[SUCCESS] The file 'tccg_benchmark.sh' has been created.")
+   print("You can run the benchmark via '. tccg_benchmark.sh'")
 
 if __name__ == "__main__":
    main()

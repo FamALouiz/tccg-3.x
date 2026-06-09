@@ -1,7 +1,7 @@
 # Copyright (C) 2016 Paul Springer (springer@aices.rwth-aachen.de) - All Rights Reserved
-from register import Register
-from instructions import Instruction
-import tccg_util
+from .register import Register
+from .instructions import Instruction
+from . import tccg_util
 
 def maskToHex(self, mask):
     string = ""
@@ -56,7 +56,7 @@ class avx2:
 
     def setzero(self,reg, indent, define):
         if( self.floatType != "float" and self.floatType != "double"):
-           print "setzero not supported for selected precision yet."
+           print("setzero not supported for selected precision yet.")
            exit(-1)
 
         if( define ):
@@ -68,14 +68,14 @@ class avx2:
 
     def store(self, dst , offset, reg, indent):
         if( self.floatType != "float" and self.floatType != "double"):
-           print "store not supported for selected precision yet."
+           print("store not supported for selected precision yet.")
            exit(-1)
 
         return Instruction("%s_mm256_store_%s(%s + %d, %s);\n"%(indent, self.packedPostfix, dst, offset, reg.name), 0)
 
     def load_l1(self,src, offset, reg, indent, define): #load from L1
         if( self.floatType != "float" and self.floatType != "double"):
-           print "load_l1 not supported for selected precision yet."
+           print("load_l1 not supported for selected precision yet.")
            exit(-1)
 
         if( define ):
@@ -94,7 +94,7 @@ class avx2:
     #src needs to be a memory location
     def broadcast(self, src, offset, dst, indent, define):
         if( self.floatType != "float" and self.floatType != "double"):
-           print "bcast not supported for selected precision yet."
+           print("bcast not supported for selected precision yet.")
            exit(-1)
 
         if( define ):
@@ -112,7 +112,7 @@ class avx2:
     #c = a * b
     def mul(self, a, b, c, indent):
         if( self.floatType != "float" and self.floatType != "double"):
-           print "mul not supported for selected precision yet."
+           print("mul not supported for selected precision yet.")
            exit(-1)
 
         latency = 5
@@ -126,7 +126,7 @@ class avx2:
     #c = a + b
     def add(self, a, b, c, indent):
         if( self.floatType != "float" and self.floatType != "double"):
-           print "add not supported for selected precision yet."
+           print("add not supported for selected precision yet.")
            exit(-1)
            
         latency = 5
@@ -140,7 +140,7 @@ class avx2:
     #d = a * b + c
     def fma(self, a, b, c, d, indent):
         if( self.floatType != "float" and self.floatType != "double"):
-           print "fma not supported for selected precision yet."
+           print("fma not supported for selected precision yet.")
            exit(-1)
 
         latency = 5
@@ -152,7 +152,7 @@ class avx2:
    
     def duplicate(self, perm, src, dst, indent):
        if( self.floatType != "float" ):
-           print "unpack not supported for selected precision yet."
+           print("unpack not supported for selected precision yet.")
            exit(-1)
        content = []
        for i in perm:
@@ -169,7 +169,7 @@ class avx2:
        else:
           defineStr = ""
        if( self.floatType != "float" ):
-           print "unpack not supported for selected precision yet."
+           print("unpack not supported for selected precision yet.")
            exit(-1)
        content = []
        verb = "  //"
@@ -188,7 +188,7 @@ class avx2:
 
     def unpack_hi32(self, src1, src2, dst, indent, define):
        if( self.floatType != "float" ):
-           print "unpack not supported for selected precision yet."
+           print("unpack not supported for selected precision yet.")
            exit(-1)
        content = []
        content.append(src1.content[2])
@@ -208,7 +208,7 @@ class avx2:
 
     def unpack_lo32(self, src1, src2, dst, indent, define):
        if( self.floatType != "float" ):
-           print "unpack not supported for selected precision yet."
+           print("unpack not supported for selected precision yet.")
            exit(-1)
        content = []
        content.append(src1.content[0])
@@ -228,7 +228,7 @@ class avx2:
 
     def permute(self, perm, src, dst, indent, define):
        if( self.floatType != "float" ):
-           print "unpack not supported for selected precision yet."
+           print("unpack not supported for selected precision yet.")
            exit(-1)
        if( define ):
           defineStr = "%s "%(self.registerType)
@@ -411,7 +411,7 @@ class avx512:
        return ins
 
     def permute(self, perm, src, dst, indent, define):
-       print "ERROR: arch::permute() is not implemented yet."
+       print("ERROR: arch::permute() is not implemented yet.")
        exit(-1)
        content = []
        for i in perm:

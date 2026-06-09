@@ -93,7 +93,7 @@ def gen(size, astr,bstr, cstr, dataType, numThreads):
         bispaceC += "s%s|"%c
     floatType = "double"
     if( dataType == 's' ):
-        print "WARNING: LIBTENSOR DOES NOT WORK FOR SIGNLE PRECISION"
+        print("WARNING: LIBTENSOR DOES NOT WORK FOR SIGNLE PRECISION")
         code +=  "WARNING: LIBTENSOR DOES NOT WORK FOR SIGNLE PRECISION\n"
     code += "    bispace<%d> sA(%s);\n"%(len(astr), bispaceA[:-1])
     code += "    dense_tensor<%d,%s,allocator<%s> > A(sA.get_bis().get_dims());\n"%(len(astr), floatType, floatType)

@@ -1,7 +1,7 @@
 # Copyright (C) 2016 Paul Springer (springer@aices.rwth-aachen.de) - All Rights Reserved
 import copy
-import tccg_util
-from Index import *
+from . import tccg_util
+from .Index import *
 
 
 class Tensor:
@@ -40,7 +40,7 @@ class Tensor:
         l = 0
         while l < len(indices):
             if(self.indices[pos] != indices[l]):
-                print self.indices[pos].label , indices[l].label
+                print(self.indices[pos].label , indices[l].label)
                 return 0
             pos += 1
             l += 1
@@ -83,14 +83,14 @@ class Tensor:
     def replaceIndex(self, idx, indices):
         pos = self.getPos(idx)
         if( pos == -1 ):
-            print "Tensor::replaceIndex(): index not found"
+            print("Tensor::replaceIndex(): index not found")
             exit(-1)
 
         size = 1
         for idxt in indices:
             size *= idxt.size
         if( size != idx.size ):
-            print "Tensor::replaceIndex(): size does not match"
+            print("Tensor::replaceIndex(): size does not match")
             exit(-1)
 
         del self.indices[pos]
@@ -111,12 +111,12 @@ class Tensor:
         while size < BLOCKING_SIZE:
             pos = self.getPos(indices[i])
             if( size * self.indices[pos].size > BLOCKING_SIZE ):
-                print "ERROR: this function should not do anything anymore (since the splitting and resizing happens earlier)"
+                print("ERROR: this function should not do anything anymore (since the splitting and resizing happens earlier)")
                 exit(-1)
                 if(BLOCKING_SIZE % size != 0):
-                    print "ERROR: size is not divisible by %d"%BLOCKING_SIZE 
+                    print("ERROR: size is not divisible by %d"%BLOCKING_SIZE) 
                     for idx in indices:
-                        print str(idx)
+                        print(str(idx))
                     exit(-1)
 
                 self.indices[pos].size = BLOCKING_SIZE / size
@@ -127,7 +127,7 @@ class Tensor:
     def split(self, idxPos, size):
         idx = self.indices[idxPos]
         if( self.indices[idxPos].size % size != 0 ):
-            print "ERROR: cannot split index %s because its size is not divisible by %d."%(idx.label, size)
+            print("ERROR: cannot split index %s because its size is not divisible by %d."%(idx.label, size))
             exit(-1)
         
         newIdx = index(idx.label + "_1", idx.size/size)
@@ -148,7 +148,7 @@ class Tensor:
         for i in self.indices:
             size.append(i.size)
 
-        print self.label + "_" + ids, size, self.ld
+        print(self.label + "_" + ids, size, self.ld)
 
     def __ne__(self, other):
         return self.label != other.label
@@ -166,7 +166,7 @@ class Tensor:
 
     def setLd(self, ld):
         if( len(self.indices) != len(ld) ):
-            print "ERROR: leading dimension: dimension of tensors does not match."
+            print("ERROR: leading dimension: dimension of tensors does not match.")
             exit(-1)
         self.ld = copy.deepcopy(ld)
 

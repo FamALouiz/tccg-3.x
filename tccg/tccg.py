@@ -2,22 +2,22 @@
 
 import argparse
 import traceback
-from gett import Gett
+from .gett import Gett
 import sqlite3
 import time
 import shutil
-from arch import *
-import sql_util
+from .arch import *
+from . import sql_util
 import sys
 import re
 import os
 import subprocess
 import multiprocessing
 import copy
-from tccg_util import *
-from tensor import *
-from gemm_loop import *
-from ttgemmt import *
+from .tccg_util import *
+from .tensor import *
+from .gemm_loop import *
+from .ttgemmt import *
 import time
 import socket
 
@@ -87,7 +87,7 @@ class Tccg:
     def __init__ (self, tccgArgs):
 
         self.args = tccgArgs
-        print self.args.getSettingsStr(0)
+        print(self.args.getSettingsStr(0))
 
         (C,A,B,alpha,beta) = self.parseFile(tccgArgs.filename)
 
@@ -104,10 +104,10 @@ class Tccg:
         self.fuseIndices()
         outStrAfter = str(C) + " = " + "%.2f"%alpha + " * " + str(A) +" "+ str(B) + " + " + "%.2f"%beta + " * " + str(C)
         if( outStr != outStrAfter ):
-            print "Contration before fusing indices:"
-            print outStr
-            print "Contration after fusing indices:"
-        print outStrAfter
+            print("Contration before fusing indices:")
+            print(outStr)
+            print("Contration after fusing indices:")
+        print(outStrAfter)
 
         if( self.args.architecture == "avx2" ):
             arch = avx2(self.floatType)
@@ -116,7 +116,7 @@ class Tccg:
         elif( self.args.architecture == "cuda" ):
             arch = cuda(self.floatType)
         else:
-            print "[GETT] Error: architecture unknown"
+            print("[GETT] Error: architecture unknown")
             exit(-1)
         self.ttgemmt = TTGEMMT(self.A, self.B, self.C, self.alpha, self.beta,
                 self.args.numThreads, arch, self.floatType, 0, self.args.generateOnly, self.args.maxImplementationsTTGT)
@@ -151,9 +151,9 @@ class Tccg:
         for idx in kInd:
            self.sizeK *= idx.size
 
-        print "m: %d"%self.sizeM
-        print "n: %d"%self.sizeN
-        print "k: %d"%self.sizeK
+        print("m: %d"%self.sizeM)
+        print("n: %d"%self.sizeN)
+        print("k: %d"%self.sizeK)
 
     def emitFinalCode(self, maxGettFlops, maxLoGFlops, maxTTGTFlops, key = ()):
 
@@ -183,7 +183,7 @@ class Tccg:
            filename = "ttgemmt.cpp"
            shutil.copyfile("./ttgemmt.cpp",directory+"/"+filename)
 
-       print "The generated code is available at:",directory+"/"+filename
+       print("The generated code is available at:",directory+"/"+filename)
 
     def codeGen(self):
         tccg_root = os.environ['TCCG_ROOT']
@@ -264,15 +264,15 @@ class Tccg:
         if( self.args.architecture  == "cuda"):
             arch = "GPU"
             my_env["CXX"] = "g++" 
-        print OKGREEN + "[make] Compile ...                          ", ENDC
+        print(OKGREEN + "[make] Compile ...                          ", ENDC)
         numThreadsCompile = max(2, multiprocessing.cpu_count()/2)
         if( self.args.verbose ):
             ret = subprocess.call(["make", arch, "-j%d"%numThreadsCompile], env=my_env)
         else:
             ret = subprocess.call(["make", arch, "-j%d"%numThreadsCompile], stdout=DEVNULL, stderr=subprocess.STDOUT, env=my_env)
         if ret != 0 :
-            print FAIL+"[TCC Error] compilation failed." + ENDC
-            print "use '--verbose' for debugging purposes."
+            print(FAIL+"[TCC Error] compilation failed." + ENDC)
+            print("use '--verbose' for debugging purposes.")
             raise
         compTime = time.time() - startTime
 
@@ -286,7 +286,7 @@ class Tccg:
         my_env["OMP_NUM_THREADS"] = str(self.args.numThreads)
         my_env["KMP_AFFINITY"] = self.args.affinity 
 
-        print OKGREEN + "[running] Measuring the runtime of all variants ..." + ENDC
+        print(OKGREEN + "[running] Measuring the runtime of all variants ..." + ENDC)
         proc = subprocess.Popen(["./gett.exe"],stdout=subprocess.PIPE, env=my_env)
 
         ###########################################
@@ -309,7 +309,7 @@ class Tccg:
                     flops = line.split(":")[1]
                     flops = float(flops.split(" ")[1])
                 except :      
-                    print "some error has occurred: ", line
+                    print("some error has occurred: ", line)
                     continue
                 
                 if( implementationType == "reference" ):
@@ -334,19 +334,19 @@ class Tccg:
             if( line.find("tcc_end") != -1):
                 break
             if( len(line) > 2 ):
-                print Line.replace('\n','')
+                print(Line.replace('\n',''))
             if( line.find("error") != -1 or line.find("fault") != -1):
-                print FAIL + Line + ENDC
+                print(FAIL + Line + ENDC)
                 failCount += 1
                 break
             time.sleep(0.1)
 
         proc.wait()
-        print "Compilation took %.2f seconds"%(compTime)
-        print "Code-Generation took %.2f seconds"%(codeGenTime)
-        print "Timing all candidates took %.2f seconds"%(time.time() - startTime)
+        print("Compilation took %.2f seconds"%(compTime))
+        print("Code-Generation took %.2f seconds"%(codeGenTime))
+        print("Timing all candidates took %.2f seconds"%(time.time() - startTime))
         if failCount > 0 or proc.returncode != 0:
-            print FAIL+"[TCC Error] runtime error. (error code: %d)"%proc.poll(), ENDC
+            print(FAIL+"[TCC Error] runtime error. (error code: %d)"%proc.poll(), ENDC)
             raise
 
         ###########################################
@@ -374,7 +374,7 @@ class Tccg:
             if( maxFlopsLoop < loopVersions[loopVersion]):
                 maxFlopsLoop = loopVersions[loopVersion]
                 bestLoopVersion = loopVersion
-        print "Best loop-based implementation (%s) attained: %.2f GFLOPS/s"%(bestLoopVersion, maxFlopsLoop)
+        print("Best loop-based implementation (%s) attained: %.2f GFLOPS/s"%(bestLoopVersion, maxFlopsLoop))
             
 
         maxFlopsGEMM = 0
@@ -385,7 +385,7 @@ class Tccg:
                 if( maxFlopsGEMM < gemmVersions[GEMMVersion]):
                     maxFlopsGEMM = gemmVersions[GEMMVersion]
                     bestGEMMVersion = GEMMVersion
-            print "Best GEMM-based implementation (%s) attained: %.2f GFLOPS/s"%(bestGEMMVersion, maxFlopsGEMM)
+            print("Best GEMM-based implementation (%s) attained: %.2f GFLOPS/s"%(bestGEMMVersion, maxFlopsGEMM))
 
 
 
@@ -396,7 +396,7 @@ class Tccg:
             if( maxFlopsttgt < ttgtVersions[ttgtVersion]):
                 maxFlopsttgt = ttgtVersions[ttgtVersion]
                 bestttgtVersion = ttgtVersion
-        print "Best TTGT-based implementation (%s) attained: %.2f GFLOPS/s"%(bestttgtVersion, maxFlopsttgt)
+        print("Best TTGT-based implementation (%s) attained: %.2f GFLOPS/s"%(bestttgtVersion, maxFlopsttgt))
 
         maxFlopsGETT = 0
         bestGETTVersion = ""
@@ -422,8 +422,8 @@ class Tccg:
                 bestKey = self.gett.decodeName(bestGETTVersion)
 
         self.emitFinalCode(maxFlopsGETT, maxFlopsLoop, maxFlopsttgt, bestKey)
-        print "Best gett-based implementation (%s) attained: %.2f GFLOPS/s"%(bestGETTVersion, maxFlopsGETT)
-        print "Best Loop/TTGT/GETT/reference/GEMM/TCL: %.2f / %.2f / %.2f / %.2f / %.2f / %.2f GFLOPS"%(maxFlopsLoop, maxFlopsttgt, maxFlopsGETT,referenceFlops, maxFlopsGEMM, tclFlops)
+        print("Best gett-based implementation (%s) attained: %.2f GFLOPS/s"%(bestGETTVersion, maxFlopsGETT))
+        print("Best Loop/TTGT/GETT/reference/GEMM/TCL: %.2f / %.2f / %.2f / %.2f / %.2f / %.2f GFLOPS"%(maxFlopsLoop, maxFlopsttgt, maxFlopsGETT,referenceFlops, maxFlopsGEMM, tclFlops))
 
         # commit changes to database
         connection.commit()
@@ -552,9 +552,9 @@ class Tccg:
                     l -= 1
 
     def printSyntax(self):
-        print "Tensors have to start with a capital letter."
-        print "Underscores are not allowed for any variables."
-        print "indices have to start with a lower case character."
+        print("Tensors have to start with a capital letter.")
+        print("Underscores are not allowed for any variables.")
+        print("indices have to start with a lower case character.")
 
     def parseFile(self, filename):
         if( not os.path.isfile(filename) ):
@@ -574,11 +574,11 @@ class Tccg:
                 ttensors = re.findall("[A-C]\[[a-z][a-z,0-9]*[,[a-z][a-z,0-9]*]*\]", content)
                 if( len(ttensors) == 3 or len(ttensors) == 4):
                     if( content.find("+=") != -1 or content.find("-=") != -1):
-                        print FAIL + "Syntax error: += or -= is not allowed." + ENDC
-                        print FAIL + "Please use the following syntax instead: C[...] = ... + beta * C[...]" + ENDC
+                        print(FAIL + "Syntax error: += or -= is not allowed." + ENDC)
+                        print(FAIL + "Please use the following syntax instead: C[...] = ... + beta * C[...]" + ENDC)
                         exit(-1)
                     if( content.find("+-") != -1 or content.find("-+") != -1):
-                        print FAIL + "Syntax error: +- or -+ is not allowed." + ENDC
+                        print(FAIL + "Syntax error: +- or -+ is not allowed." + ENDC)
                         exit(-1)
 
                     for t in ttensors:
@@ -636,7 +636,7 @@ class Tccg:
                         alpha = float(alpha)
                         beta= float(beta)
                     else:
-                        print FAIL + "Syntax error too many scalars specified." + ENDC
+                        print(FAIL + "Syntax error too many scalars specified." + ENDC)
                         exit(-1)
 
 
@@ -647,37 +647,37 @@ class Tccg:
                     sizes[label] = size
 
         if(len(tensors) != 3):
-            print FAIL + "ERROR: You must specify exactly three tensors." + ENDC
-            print "We found these tensors:"
+            print(FAIL + "ERROR: You must specify exactly three tensors." + ENDC)
+            print("We found these tensors:")
             for tensor in tensors:
-                print tensor
+                print(tensor)
             self.printSyntax()
             exit(-1)
 
         retTensors = []
-        print map(str,tensors)
+        print(list(map(str,tensors)))
         # create Tensor objects from strings
         for i in range(len(tensors)):
             t = tensors[i]
             label = re.findall("[A-C]",t)[0]
             if( i == 0 and label != "C" ):
-                print WARNING + "WARNING: first Tensor use the label '%s' => renamed to C."%(label) + ENDC
+                print(WARNING + "WARNING: first Tensor use the label '%s' => renamed to C."%(label) + ENDC)
                 label = "C"
             if( i == 1 and label != "A" ):
-                print WARNING + "WARNING: second Tensor use the label '%s' => renamed to A."%(label) + ENDC
+                print(WARNING + "WARNING: second Tensor use the label '%s' => renamed to A."%(label) + ENDC)
                 label = "A"
             if( i == 2 and label != "B" ):
-                print WARNING + "WARNING: third Tensor use the label '%s' => renamed to B."%(label) + ENDC
+                print(WARNING + "WARNING: third Tensor use the label '%s' => renamed to B."%(label) + ENDC)
                 label = "B"
             tmp = re.findall("\[[a-z][a-z,0-9]*[,[a-z][a-z,0-9]*]*\]",t)
             tmp = tmp[0][1:-1] #delte '[' and ']'
             indices = tmp.split(',')
             final_indices = []
             for idx in indices:
-                if( sizes.has_key(idx) ):
+                if( idx in sizes ):
                     final_indices.append( index(idx,sizes[idx]) )
                 else:
-                    print FAIL + "ERROR: You must specify the size of each index." + ENDC
+                    print(FAIL + "ERROR: You must specify the size of each index." + ENDC)
                     exit(-1)
             retTensors.append(Tensor(label, final_indices))
 
@@ -1014,7 +1014,7 @@ class Tccg:
            code += "      trashCache(trash1, trash2, largerThanL3);\n"
            code += "      double start = omp_get_wtime();\n"
            if( len(self.ttgemmt.candidates) > 0 ):
-               code += "      ttgemmt_%s(A, B, C_ref, alpha, beta, work_);\n"%self.ttgemmt.candidates[self.ttgemmt.candidates.keys()[0]]
+               code += "      ttgemmt_%s(A, B, C_ref, alpha, beta, work_);\n"%self.ttgemmt.candidates[list(self.ttgemmt.candidates.keys())[0]]
            else:
                code += "      referenceVersion(A, B, C_ref, alpha, beta);\n"
            code += "      double tmp = omp_get_wtime() - start;\n"
@@ -1296,7 +1296,7 @@ def main():
         tccgArgs.compiler = args.compiler 
         if(args.compiler != "icpc" and args.compiler != "nvcc" and args.compiler
                 != "g++"):
-            print "ERROR: unknown compiler. Choose either 'icpc', 'g++' or 'nvcc'"
+            print("ERROR: unknown compiler. Choose either 'icpc', 'g++' or 'nvcc'")
             exit(-1)
     if( tccgArgs.architecture  == "cuda"):
         tccgArgs.compiler = "nvcc"
@@ -1322,21 +1322,21 @@ def main():
             tccgArgs.floatTypeB = "double"
             tccgArgs.floatTypeC = "double"
         else:
-            print "ERROR: floatType %s is not supported yet."%args.floatType
+            print("ERROR: floatType %s is not supported yet."%args.floatType)
             exit(-1)
     if( args.affinity):
         tccgArgs.affinity = args.affinity
 
-    print tccgArgs
+    print(tccgArgs)
 
     if( not args.affinity):
         if(tccgArgs.compiler == "g++" ):
             tccgArgs.affinity = "0-%d"%multiprocessing.cpu_count()
-            print WARNING + "WARNING: you did not specify an thread affinity. We are using: GOMP_CPU_AFFINITY=%s by default"%tccgArgs.affinity +ENDC
-            print WARNING + "WARNING: The default thread affinity might be suboptimal depending on the numbering of your CPU cores. We recommend using a ''compact'' thread affinity even for g++ (i.e., simulate KMP_AFFINITY=compact)."+ENDC
+            print(WARNING + "WARNING: you did not specify an thread affinity. We are using: GOMP_CPU_AFFINITY=%s by default"%tccgArgs.affinity +ENDC)
+            print(WARNING + "WARNING: The default thread affinity might be suboptimal depending on the numbering of your CPU cores. We recommend using a ''compact'' thread affinity even for g++ (i.e., simulate KMP_AFFINITY=compact)."+ENDC)
         else:
             tccgArgs.affinity = "compact,1"
-            print WARNING + "WARNING: you did not specify an thread affinity. We are using: KMP_AFFINITY=%s by default"%tccgArgs.affinity +ENDC
+            print(WARNING + "WARNING: you did not specify an thread affinity. We are using: KMP_AFFINITY=%s by default"%tccgArgs.affinity +ENDC)
 
     tccgArgs.workingDir = workingDir
     tccgArgs.verbose = args.verbose
@@ -1355,10 +1355,10 @@ def main():
     tccgArgs.batchedGEMM = not args.noBatchedGEMM
 
     _tccg_root = ""
-    if( os.environ.has_key('TCCG_ROOT') ):
+    if( 'TCCG_ROOT' in os.environ ):
         _tccg_root = os.environ['TCCG_ROOT']
     else:
-        print FAIL + "ERROR: TCCG_ROOT environment variable not set. Make sure that this variable points to the directory containing 'tccg.py'" + ENDC
+        print(FAIL + "ERROR: TCCG_ROOT environment variable not set. Make sure that this variable points to the directory containing 'tccg.py'" + ENDC)
         exit(-1)
 
     os.chdir(_tccg_root+"/tccg")
@@ -1372,7 +1372,7 @@ def main():
     # read config
     ###########################################
     if( not os.path.isfile("../../config.cfg") ):
-        print "ERROR: config.cfg not found. This file should be available within the TCCG_ROOT directory."
+        print("ERROR: config.cfg not found. This file should be available within the TCCG_ROOT directory.")
         exit(-1)
     f = open("../../config.cfg","r")
     blasLib = ""
@@ -1406,14 +1406,14 @@ def main():
     ###########################################
     # generate versions
     ###########################################
-    print OKGREEN + "[generate] Generate implementations ...                ", ENDC
+    print(OKGREEN + "[generate] Generate implementations ...                ", ENDC)
     try:
         tccg = Tccg( tccgArgs )
         tccg.codeGen()
     except:
-        print "An error has occurred."
-        print traceback.print_exc(file=sys.stdout)
-        print "You could try to run with --useDynamicMemory option and see if the problem still exists."
+        print("An error has occurred.")
+        print(traceback.print_exc(file=sys.stdout))
+        print("You could try to run with --useDynamicMemory option and see if the problem still exists.")
 
     # remove/delete temporary directory
     os.chdir("..")

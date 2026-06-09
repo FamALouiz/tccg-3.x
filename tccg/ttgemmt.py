@@ -2,9 +2,9 @@
 import copy
 import traceback
 import itertools
-from arch import *
-from tccg_util import *
-from transpose import *
+from .arch import *
+from .tccg_util import *
+from .transpose import *
 
 class TTGEMMT:
     """
@@ -34,10 +34,10 @@ class TTGEMMT:
 
         self.loopIndices = getLoopIndices(self.A, self.B, self.C)
         for idx in self.loopIndices:
-            print "ERROR: TTGEMMT: loops not supported yet."
+            print("ERROR: TTGEMMT: loops not supported yet.")
             exit(-1)
             if( idx == A.indices[0] or idx == B.indices[0] or idx == C.indices[0] ):
-                print FAIL + "ERROR: loop-indices (i.e., indices that appear in all tensors) are not allowed to be the stride-1 index of any input." + ENDC
+                print(FAIL + "ERROR: loop-indices (i.e., indices that appear in all tensors) are not allowed to be the stride-1 index of any input." + ENDC)
                 exit(-1)
         ##########################
         # rewrite tensor contraction in terms of GETT
@@ -158,8 +158,8 @@ void %s(const char *transa, const char *transb,
         for estimate_or_generate in [0,1]: # if estimate_or_generate == 0 : estimate performance
                                            # if estimate_or_generate == 1 : generate code for the best x implementations
             if( estimate_or_generate ):
-                print "Total amount of TTGT implementations: %d"%len(transpositions)
-                print "Best TTGT candidates: %s"%self.selectBestCandidate(transpositions)
+                print("Total amount of TTGT implementations: %d"%len(transpositions))
+                print("Best TTGT candidates: %s"%self.selectBestCandidate(transpositions))
             self.numImpl = 0
             maxWork = 0
             #all these permutations are valid
@@ -289,7 +289,7 @@ void %s(const char *transa, const char *transb,
                                                code = include + code
                                                implementation += cpp
                                        except:
-                                           print "ERROR in TTGT:",A, "->",tmpA, B, "->",tmpB,C, candidateName
+                                           print("ERROR in TTGT:",A, "->",tmpA, B, "->",tmpB,C, candidateName)
                                            traceback.print_stack()   
                                            exit(-1)
 
@@ -301,9 +301,9 @@ void %s(const char *transa, const char *transb,
                                     implementation += "}\n"
                                     self.numImpl += 1
                                     if( self.useAsGEMM == 0 ):
-                                        print "%d ttgt-based versions generated so far: %s.                                 "%(self.numImpl, candidateName)
+                                        print("%d ttgt-based versions generated so far: %s.                                 "%(self.numImpl, candidateName))
                                     else:
-                                        print "%d gemm-based versions generated so far: %s.                                 "%(self.numImpl, candidateName)
+                                        print("%d gemm-based versions generated so far: %s.                                 "%(self.numImpl, candidateName))
                                     code += "//candidate: %s\n"%candidateName + implementation
                                     codeHpp += header + ";\n"
 

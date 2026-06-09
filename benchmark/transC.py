@@ -15,7 +15,7 @@ j2=48
 """)
 bash = open("transC.sh", "w")
 
-kvalues = range(8,65,8) + [96,112] + range(128,257,32) + [384,512,1024]
+kvalues = list(range(8,65,8)) + [96,112] + list(range(128,257,32)) + [384,512,1024]
 
 bash.write("rm -f tmp.dat\n")
 
@@ -32,4 +32,4 @@ bash.write("cat tmp.dat | sed '$!N;s/\\n/ /' > transC.dat\n") #
 
 bash.close()
 
-print "You may run the benchmark by executing: '. transC.sh'"
+print("You may run the benchmark by executing: '. transC.sh'")
