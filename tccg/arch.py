@@ -25,7 +25,7 @@ class avx2:
 
         self.floatType = floatType
         self.floatSize = tccg_util.getFloatSize(floatType)
-        self.registerSize = 256 / 8 / self.floatSize # in elements
+        self.registerSize = int(256 / 8 / self.floatSize) # in elements
         self.cacheLineSize = 64 / self.floatSize # in elements
 
         self.numRegisters = 16
