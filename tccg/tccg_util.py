@@ -122,7 +122,7 @@ def getCompilerVersion(compiler):
         print(FAIL + "ERROR: some error has occured. Does the selected compiler (%s) exist?"%comp + ENDC)
         exit(-1)
 
-    output = proc.communicate()[0].split("\n")
+    output = proc.communicate()[0].decode('utf-8').split("\n")
     output = output[0].replace(":","")
     return output
 
