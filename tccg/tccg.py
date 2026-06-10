@@ -301,8 +301,8 @@ class Tccg:
         loopVersions = {}
         tclFlops = -1
         for line in proc.stdout:
-            Line = line
-            line = line.lower()
+            Line = line.decode()
+            line = line.decode().lower()
             if( line.find(":") != -1 ):
                 implementationType = line.split(":")[0]
                 try:
