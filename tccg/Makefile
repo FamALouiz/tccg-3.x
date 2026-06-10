@@ -1,4 +1,6 @@
-BLAS_LIB=-L${MKLROOT}/lib -Wl,-rpath,${MKLROOT}/lib -lmkl_intel_lp64 -lmkl_core -lmkl_intel_thread -lpthread -lm -ldl
+BLAS_LIB=-L${BLIS_ROOT}/lib -lblis
+#MKL
+#BLAS_LIB=-L${MKLROOT}/lib -Wl,-rpath,${MKLROOT}/lib -lmkl_intel_lp64 -lmkl_core -lmkl_intel_thread -lpthread -lm -ldl
 CUDA_LIB=-L${CUDA_ROOT}/lib64 -lcublas
 CUDA_INCLUDE=-I${CUDA_ROOT}/include
 ifeq ($(CXX),icpc)
@@ -9,7 +11,7 @@ CXX_FLAGS = -fopenmp -march=native
 endif
 endif
 
-CXX_FLAGS += -O3 -std=c++11 -Wall
+CXX_FLAGS += -O3 -std=c++11 -Wno-narrowing -Wall
 CXX_LINK = ${BLAS_LIB}
 
 ifeq (${MAKECMDGOALS},GPU2)
@@ -28,7 +30,7 @@ CPU:
 	${MAKE} clean 
 	${MAKE} CPU2
 CPU2: INCLUDE_PATH=-I${HPTT_ROOT}/include/ -I${TCL_ROOT}/include/
-CPU2: CXX_FLAGS+=-L${HPTT_ROOT}/lib -lhptt ${TCL_ROOT}/lib/libtcl.so
+CPU2: CXX_FLAGS+=-L${HPTT_ROOT}/lib -L${TCL_ROOT}/lib -lhptt -ltcl
 CPU2: all
 
 GPU:
