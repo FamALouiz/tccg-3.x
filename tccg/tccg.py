@@ -167,7 +167,7 @@ class Tccg:
            self.gett.genCode(key)
            #filename = self.gett.getName(key)+".cpp"
            filename = "gett.cpp"
-           shutil.copyfile("./gett0.cpp",directory+"/"+filename)
+           shutil.copyfile("./gett.cpp",directory+"/"+filename)
        elif( maxLoGFlops >= maxTTGTFlops ):
            # generate LoG
            self.gemmLoop.genCode()
